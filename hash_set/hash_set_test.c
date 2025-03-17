@@ -16,19 +16,21 @@ void	test_init(void)
 void	test_add_contains(void)
 {
 	HashSet	set;
-	NodeHS *target;
-	int size = 5;
-	int index = 0;
-	int array[] = {20, 30, 10, 0, 40};
-	int sorted_array[] = {0, 10, 20, 30, 40};
+	NodeHS	*target;
+	int		size;
+	int		index;
+	int		array[] = {20, 30, 10, 0, 40};
+	int		sorted_array[] = {0, 10, 20, 30, 40};
 
-	printf("tabel_size = %d\n", TABLE_SIZE);
-
+	size = 5;
+	index = 0;
 	init_hs(&set);
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i < size; ++i)
+	{
 		assert(add_hs(&set, array[i]) == true);
 	}
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i < size; ++i)
+	{
 		assert(contains_hs(&set, sorted_array[i]) == true);
 	}
 	printf("test_add_contains passed\n");
@@ -60,11 +62,12 @@ void	test_free(void)
 	printf("test_free passed\n");
 }
 
-int main() {
-    test_init();
-    test_add_contains();
-    test_remove();
-    test_free();
-    printf("All tests passed!\n");
-    return (0);
+int	main(void)
+{
+	test_init();
+	test_add_contains();
+	test_remove();
+	test_free();
+	printf("All tests passed!\n");
+	return (0);
 }
