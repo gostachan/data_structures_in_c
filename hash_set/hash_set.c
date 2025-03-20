@@ -5,14 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmisaki <hmisaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/17 16:16:31 by hmisaki           #+#    #+#             */
-/*   Updated: 2025/03/17 16:16:31 by hmisaki          ###   ########.fr       */
+/*   Created: 2025/03/20 12:02:08 by hmisaki           #+#    #+#             */
+/*   Updated: 2025/03/20 12:02:08 by hmisaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "hash_set.h"
 
-void	init_hs(HashSet *set)
+void	init_hs(t_HashSet *set)
 {
 	int	index;
 
@@ -21,20 +21,9 @@ void	init_hs(HashSet *set)
 		set->table[index++] = NULL;
 }
 
-NodeHS	*new_node_hs(NodeHS *next, NodeHS *prev, int value)
+bool	contains_hs(t_HashSet *set, int value)
 {
-	NodeHS	*new;
-
-	new = malloc(sizeof(NodeHS));
-	new->next = next;
-	new->prev = prev;
-	new->value = value;
-	return (new);
-}
-
-bool	contains_hs(HashSet *set, int value)
-{
-	NodeHS	*target;
+	t_NodeHS	*target;
 
 	target = set->table[value % TABLE_SIZE];
 	while (target && target->value <= value)
@@ -46,43 +35,37 @@ bool	contains_hs(HashSet *set, int value)
 	return (false);
 }
 
-bool	add_hs(HashSet *set, int value)
+bool	add_hs(t_HashSet *set, int value)
 {
-	NodeHS	*target;
-	NodeHS	*prev;
-	NodeHS	*new;
+	t_NodeHS	*new;
+	t_NodeHS	*target;
 
 	if (contains_hs(set, value))
 		return (false);
 	new = new_node_hs(NULL, NULL, value);
-	if (new == NULL)
+	if (!new)
 		return (false);
 	target = set->table[value % TABLE_SIZE];
-	prev = NULL;
-	while (target && target->value < value)
+	if (!target)
 	{
-		prev = target;
-		target = target->next;
-	}
-	if (prev)
-	{
-		new->prev = prev;
-		new->next = prev->next;
-		if (new->next)
-			new->next->prev = new;
-		prev->next = new;
-	}
-	else
-	{
-		new->next = set->table[value % TABLE_SIZE];
 		set->table[value % TABLE_SIZE] = new;
+		return (true);
+	}
+	while (target && target->value < value)
+		target = target->next;
+	new->next = target;
+	new->prev = target->prev;
+	if (target)
+	{
+		target->prev->next = new;
+		target->prev = new;
 	}
 	return (true);
 }
 
-void	remove_hs(HashSet *set, int value)
+void	remove_hs(t_HashSet *set, int value)
 {
-	NodeHS	*target;
+	t_NodeHS	*target;
 
 	target = set->table[value % TABLE_SIZE];
 	while (target && target->value != value)
@@ -100,10 +83,9 @@ void	remove_hs(HashSet *set, int value)
 	free(target);
 }
 
-void	free_hs(HashSet *set)
+void	free_hs(t_HashSet *set)
 {
-	int		index;
-	NodeHS	*target;
+	int	index;
 
 	index = 0;
 	while (index < TABLE_SIZE)
